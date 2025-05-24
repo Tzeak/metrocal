@@ -330,7 +330,7 @@
 
       async function loadMovies() {
         try {
-          const response = await fetch("/api/movies");
+          const response = await fetch("/metrocal/api/movies");
           if (!response.ok) {
             throw new Error("Failed to load movies");
           }
@@ -366,7 +366,7 @@
           if (movie.poster_path) {
             const posterImg = document.createElement("img");
             posterImg.className = "movie-poster";
-            posterImg.src = `/api/image/${movie.poster_path}`;
+            posterImg.src = `/metrocal/api/image/${movie.poster_path}`;
             posterImg.alt = `${movie.title} poster`;
             movieItem.appendChild(posterImg);
           }
@@ -481,7 +481,7 @@
           const selectedMovieData = movies.filter((movie) =>
             selectedMovies.has(movie.id)
           );
-          const response = await fetch("/api/create-calendar", {
+          const response = await fetch("/metrocal/api/create-calendar", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
