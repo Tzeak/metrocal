@@ -21,14 +21,15 @@ load_dotenv()
 
 app = Flask(__name__)
 
+# Set up base directory and cache paths
+BASE_DIR = Path(__file__).resolve().parent
+CACHE_DIR = BASE_DIR / "cache"
+IMAGES_CACHE_DIR = CACHE_DIR / "images"
+MOVIES_CACHE_FILE = CACHE_DIR / "movies_cache.json"
+CACHE_DURATION = 300  # 5 minutes in seconds
+
 TMDB_API_KEY = os.getenv('TMDB_API_KEY')
 TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"
-
-# Cache configuration
-CACHE_DIR = Path("cache")
-MOVIES_CACHE_FILE = CACHE_DIR / "movies_cache.json"
-IMAGES_CACHE_DIR = CACHE_DIR / "images"
-CACHE_DURATION = 300  # 5 minutes in seconds
 
 def ensure_cache_dirs():
     """Ensure cache directories exist."""
