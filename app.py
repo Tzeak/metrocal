@@ -304,11 +304,11 @@ def create_ical_events(selected_movies):
     
     return filepath, filename
 
-@app.route('/metrocal/')
+@app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/metrocal/api/movies')
+@app.route('/api/movies')
 def get_movies():
     try:
         print("\n=== Loading Movies ===")
@@ -337,7 +337,7 @@ def get_movies():
         print(f"Error processing calendar data: {str(e)}")
         return jsonify({'error': 'Failed to process calendar data'}), 500
 
-@app.route('/metrocal/api/create-calendar', methods=['POST'])
+@app.route('/api/create-calendar', methods=['POST'])
 def create_calendar():
     try:
         data = request.get_json()
@@ -359,7 +359,7 @@ def create_calendar():
         print(f"Error creating calendar: {str(e)}")
         return jsonify({'error': 'Failed to create calendar'}), 500
 
-@app.route('/metrocal/api/image/<path:image_path>')
+@app.route('/api/image/<path:image_path>')
 def get_image(image_path):
     """Serve images from cache or fetch from TMDB."""
     try:

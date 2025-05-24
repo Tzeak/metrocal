@@ -20,6 +20,8 @@ pip install -r requirements.txt
 python app.py
 ```
 
+Also I think the routing is kinda messed up because it's hosted on my personal apache server so i manually edited some of the paths lol. Remove the /metrograph in the index.html if it's not working.
+
 2. Open your browser to `http://localhost:5000`
 
 3. Check the movies you want to see
