@@ -17,12 +17,12 @@ import asyncio
 import aiohttp
 from concurrent.futures import ThreadPoolExecutor
 
-load_dotenv()
 
 app = Flask(__name__)
 
 # Set up base directory and cache paths
 BASE_DIR = Path(__file__).resolve().parent
+load_dotenv(dotenv_path=BASE_DIR / ".env")
 CACHE_DIR = BASE_DIR / "cache"
 IMAGES_CACHE_DIR = CACHE_DIR / "images"
 MOVIES_CACHE_FILE = CACHE_DIR / "movies_cache.json"
