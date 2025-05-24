@@ -242,6 +242,12 @@
         display: inline-block;
         max-width: 300px;
         height: auto;
+        transition: all 0.2s ease-in-out;
+      }
+
+      .logo:hover {
+        filter: brightness(0) saturate(100%) invert(12%) sepia(100%)
+          saturate(5000%) hue-rotate(357deg) brightness(100%) contrast(100%);
       }
 
       .logo svg {
@@ -269,7 +275,7 @@
     <div class="container mx-auto px-4 py-8 content-container">
       <div class="max-w-4xl mx-auto">
         <div class="logo-container">
-          <a href="/" class="logo">
+          <a href="https://metrograph.com" class="logo" target="_blank">
             <img
               src="{{ url_for('static', filename='metrocal_logo.svg') }}"
               alt="METROCAL"
@@ -277,8 +283,18 @@
           </a>
         </div>
         <p class="text-center text-gray-600 mb-8">
-          Select movies to add to your calendar
+          Made because I love the metrograph but I'm too lazy to go to the
+          website every time I want to see what's playing.
         </p>
+
+        <div class="text-center mb-8">
+          <button
+            id="add-all-button"
+            class="submit-button px-8 py-3 rounded-lg whitespace-nowrap"
+          >
+            Add Everything
+          </button>
+        </div>
 
         <div id="loading" class="text-center py-12">
           <div class="loading-spinner mx-auto"></div>
@@ -327,6 +343,17 @@
     <script>
       let movies = [];
       const selectedMovies = new Set();
+
+      function addAllMovies() {
+        movies.forEach((movie) => {
+          selectedMovies.add(movie.id);
+        });
+        displayMovies();
+      }
+
+      document
+        .getElementById("add-all-button")
+        .addEventListener("click", addAllMovies);
 
       async function loadMovies() {
         try {
