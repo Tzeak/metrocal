@@ -7,7 +7,7 @@ A super simple way to browse Metrograph's movie listings and add them to your ca
 This little app lets you:
 
 - See all upcoming movies at Metrograph
-- Check which showings are sold out ()
+- Check which showings are sold out
 - Click through to buy tickets
 - Add any movie's showtimes to your calendar with one click
 
@@ -29,10 +29,3 @@ python app.py
 5. Open the .ics file to add the movies to your calendar
 
 That's it! Your calendar will now have all the movies you picked, with links to buy tickets. 🎟️
-
-## Made with
-
-- Flask
-- BeautifulSoup
-- iCalendar
-- A lot of movie love 🎥

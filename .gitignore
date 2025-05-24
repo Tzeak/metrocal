@@ -12,3 +12,4 @@ venv/
 
 # Generated files
 *.ics 
+cache/

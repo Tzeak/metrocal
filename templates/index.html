@@ -9,50 +9,292 @@
       rel="stylesheet"
     />
     <style>
+      @font-face {
+        font-family: "GTPressura";
+        src: url("https://metrograph.com/wp-content/themes/bb-theme-child/fonts/GTPressura-Light.woff2")
+          format("woff2");
+        font-weight: 300;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "GTPressura";
+        src: url("https://metrograph.com/wp-content/themes/bb-theme-child/fonts/gt-pressura-bold-webfont.woff2")
+          format("woff2");
+        font-weight: 700;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Apercu";
+        src: url("https://metrograph.com/wp-content/themes/bb-theme-child/fonts/apercu_medium_italic-webfont.woff2")
+          format("woff2");
+        font-weight: 500;
+        font-style: italic;
+      }
+      @font-face {
+        font-family: "Fugue";
+        src: url("https://metrograph.com/wp-content/themes/bb-theme-child/fonts/fugue-webfont.woff2")
+          format("woff2");
+        font-weight: normal;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Darleston";
+        src: url("https://metrograph.com/wp-content/themes/bb-theme-child/fonts/darleston-webfont.woff2")
+          format("woff2");
+        font-weight: normal;
+        font-style: normal;
+      }
+
+      body {
+        background-color: rgb(255, 240, 221);
+        min-height: 100vh;
+        font-family: "GTPressura", sans-serif;
+        letter-spacing: -0.01em;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-family: "Fugue", serif;
+        letter-spacing: -0.02em;
+        font-weight: normal;
+      }
+
       .floating-container {
         position: fixed;
         bottom: 0;
         left: 0;
         right: 0;
-        background: white;
+        background: rgba(255, 240, 221, 0.95);
+        backdrop-filter: blur(8px);
         box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
         z-index: 9999;
         padding: 1rem;
         display: none;
+        transition: all 0.3s ease-in-out;
       }
+
       .floating-container.visible {
         display: block;
       }
+
       .content-container {
         padding-bottom: 5rem;
       }
+
+      .movie-card {
+        transition: all 0.2s ease-in-out;
+        background-color: rgb(255, 240, 221);
+        border-top: 1px solid #2a317d;
+        border-bottom: 1px solid #2a317d;
+        padding: 1.5rem 0;
+        margin: 0;
+        position: relative;
+        cursor: pointer;
+        display: flex;
+        gap: 1.5rem;
+      }
+
+      .movie-card:first-child {
+        border-top: 2px solid #2a317d;
+      }
+
+      .movie-card:last-child {
+        border-bottom: 2px solid #2a317d;
+      }
+
+      .movie-card:hover {
+        background-color: rgba(255, 255, 255, 0.5);
+      }
+
+      .movie-poster {
+        width: 100px;
+        height: 150px;
+        object-fit: cover;
+        border: 1px solid #2a317d;
+        flex-shrink: 0;
+      }
+
+      .movie-content {
+        flex-grow: 1;
+      }
+
+      .movie-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .movie-title {
+        font-family: "Fugue", serif;
+        font-size: 1.25rem;
+        letter-spacing: -0.02em;
+        color: #2a317d;
+        margin: 0;
+      }
+
+      .showtimes-container {
+        margin-left: 2.5rem;
+      }
+
+      .showtime-item {
+        font-family: "GTPressura", sans-serif;
+        font-size: 0.875rem;
+        color: #2a317d;
+        margin: 0.25rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .showtime-item.sold-out {
+        color: rgba(0, 0, 0, 0.4);
+        text-decoration: line-through;
+      }
+
+      .showtime-link {
+        color: inherit;
+        text-decoration: none;
+        transition: all 0.2s ease-in-out;
+      }
+
+      .showtime-link:hover {
+        color: #ec2027;
+      }
+
+      .checkbox {
+        width: 1.25rem;
+        height: 1.25rem;
+        border: 1px solid #2a317d;
+        border-radius: 2px;
+        appearance: none;
+        -webkit-appearance: none;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.2s ease-in-out;
+      }
+
+      .checkbox:checked {
+        background-color: #2a317d;
+      }
+
+      .checkbox:checked::after {
+        content: "✓";
+        position: absolute;
+        color: rgb(255, 240, 221);
+        font-size: 0.875rem;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .checkbox:hover {
+        border-color: #ec2027;
+      }
+
+      .checkbox:checked:hover {
+        background-color: #ec2027;
+      }
+
+      .loading-spinner {
+        border: 3px solid rgb(255, 240, 221);
+        border-top: 3px solid #2a317d;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .submit-button {
+        background-color: #2a317d;
+        color: rgb(255, 240, 221);
+        transition: all 0.2s ease-in-out;
+      }
+
+      .submit-button:hover {
+        background-color: #ec2027;
+      }
+
+      .submit-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .logo-container {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .logo {
+        display: inline-block;
+        max-width: 300px;
+        height: auto;
+      }
+
+      .logo svg {
+        width: 100%;
+        height: auto;
+      }
+
+      .movie-card .showtime-link {
+        cursor: pointer;
+        position: relative;
+        z-index: 2;
+      }
+
+      .movie-card .showtime-link:hover {
+        color: #ec2027;
+      }
+
+      .movie-card .checkbox {
+        position: relative;
+        z-index: 1;
+      }
     </style>
   </head>
-  <body class="bg-gray-100 min-h-screen">
+  <body>
     <div class="container mx-auto px-4 py-8 content-container">
-      <h1 class="text-4xl font-bold text-center mb-8">
-        Metrograph Movie Calendar
-      </h1>
+      <div class="max-w-4xl mx-auto">
+        <div class="logo-container">
+          <a href="/" class="logo">
+            <img
+              src="{{ url_for('static', filename='metrocal_logo.svg') }}"
+              alt="METROCAL"
+            />
+          </a>
+        </div>
+        <p class="text-center text-gray-600 mb-8">
+          Select movies to add to your calendar
+        </p>
 
-      <div id="loading" class="text-center py-8">
+        <div id="loading" class="text-center py-12">
+          <div class="loading-spinner mx-auto"></div>
+          <p class="mt-4 text-gray-600">Loading movies...</p>
+        </div>
+
         <div
-          class="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"
-        ></div>
-        <p class="mt-4 text-gray-600">Loading movies...</p>
-      </div>
+          id="error"
+          class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4"
+          role="alert"
+        >
+          <span class="block sm:inline" id="error-message"></span>
+        </div>
 
-      <div
-        id="error"
-        class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
-        role="alert"
-      >
-        <span class="block sm:inline" id="error-message"></span>
-      </div>
-
-      <div id="movie-list" class="hidden">
-        <div class="bg-white rounded-lg shadow-lg p-6">
-          <h2 class="text-2xl font-bold mb-6">Select Movies</h2>
-          <div id="movies-container" class="space-y-4">
+        <div id="movie-list" class="hidden">
+          <div id="movies-container">
             <!-- Movies will be inserted here -->
           </div>
         </div>
@@ -61,10 +303,12 @@
 
     <!-- Floating container for button and success message -->
     <div id="floating-container" class="floating-container">
-      <div class="container mx-auto px-4 flex items-center justify-between">
+      <div
+        class="container mx-auto px-4 flex items-center justify-between max-w-4xl"
+      >
         <div
           id="success"
-          class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative flex-1 mr-4"
+          class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg relative flex-1 mr-4"
           role="alert"
         >
           <span class="block sm:inline"
@@ -73,7 +317,7 @@
         </div>
         <button
           id="submit-button"
-          class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+          class="submit-button px-8 py-3 rounded-lg whitespace-nowrap"
         >
           Create Calendar
         </button>
@@ -116,34 +360,59 @@
 
         sortedMovies.forEach((movie) => {
           const movieItem = document.createElement("div");
-          movieItem.className = "mb-4 bg-gray-50 rounded-lg p-4";
+          movieItem.className = "movie-card";
+
+          // Create poster image if available
+          if (movie.poster_path) {
+            const posterImg = document.createElement("img");
+            posterImg.className = "movie-poster";
+            posterImg.src = `/api/image/${movie.poster_path}`;
+            posterImg.alt = `${movie.title} poster`;
+            movieItem.appendChild(posterImg);
+          }
+
+          const movieContent = document.createElement("div");
+          movieContent.className = "movie-content";
 
           const movieHeader = document.createElement("div");
-          movieHeader.className = "flex items-center space-x-4 mb-2";
+          movieHeader.className = "movie-header";
 
           const checkbox = document.createElement("input");
           checkbox.type = "checkbox";
-          checkbox.className = "h-5 w-5 text-blue-600 rounded";
+          checkbox.className = "checkbox";
           checkbox.value = movie.id;
           checkbox.checked = selectedMovies.has(movie.id);
-          checkbox.addEventListener("change", (e) => {
+
+          const handleCheckboxChange = (e) => {
             if (e.target.checked) {
               selectedMovies.add(movie.id);
             } else {
               selectedMovies.delete(movie.id);
             }
             updateSubmitButton();
+          };
+
+          checkbox.addEventListener("change", handleCheckboxChange);
+
+          // Add click handler to the entire movie card
+          movieItem.addEventListener("click", (e) => {
+            // Don't trigger if clicking a link
+            if (e.target.closest(".showtime-link")) {
+              return;
+            }
+            checkbox.checked = !checkbox.checked;
+            handleCheckboxChange({ target: checkbox });
           });
 
-          const title = document.createElement("div");
-          title.className = "text-lg font-medium text-gray-900";
+          const title = document.createElement("h2");
+          title.className = "movie-title";
           title.textContent = movie.title;
 
           movieHeader.appendChild(checkbox);
           movieHeader.appendChild(title);
 
           const showtimesContainer = document.createElement("div");
-          showtimesContainer.className = "ml-9 space-y-1";
+          showtimesContainer.className = "showtimes-container";
 
           // Sort showtimes by datetime
           const sortedShowtimes = [...movie.showtimes].sort(
@@ -152,17 +421,15 @@
 
           sortedShowtimes.forEach((showtime) => {
             const showtimeItem = document.createElement("div");
-            showtimeItem.className = "text-sm text-gray-600";
-            if (showtime.sold_out) {
-              showtimeItem.className += " line-through text-gray-400";
-            }
+            showtimeItem.className = `showtime-item${
+              showtime.sold_out ? " sold-out" : ""
+            }`;
 
             if (showtime.url) {
               const link = document.createElement("a");
               link.href = showtime.url;
               link.target = "_blank";
-              link.className =
-                showtimeItem.className + " hover:text-blue-600 hover:underline";
+              link.className = "showtime-link";
               link.textContent = `${showtime.formatted_time} (${
                 showtime.formatted_date
               })${showtime.sold_out ? " - Sold Out" : ""}`;
@@ -176,8 +443,9 @@
             showtimesContainer.appendChild(showtimeItem);
           });
 
-          movieItem.appendChild(movieHeader);
-          movieItem.appendChild(showtimesContainer);
+          movieContent.appendChild(movieHeader);
+          movieContent.appendChild(showtimesContainer);
+          movieItem.appendChild(movieContent);
           container.appendChild(movieItem);
         });
 
