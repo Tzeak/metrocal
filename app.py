@@ -235,10 +235,7 @@ def parse_movie_data(html_content):
         film_days = showtimes_div.find_all('div', class_='film_day')
         
         for film_day in film_days:
-            # Skip hidden days
-            if film_day.get('style') and 'display: none' in film_day.get('style'):
-                continue
-                
+            # Parse ALL days, including hidden ones (they contain all showtimes)
             # Find the date from the preceding h5 element
             date_h5 = film_day.find_previous('h5', class_='sr-only')
             if not date_h5:

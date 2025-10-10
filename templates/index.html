@@ -427,6 +427,10 @@
             if (e.target.closest(".showtime-link")) {
               return;
             }
+            // Don't trigger if clicking the checkbox itself (it will handle its own change event)
+            if (e.target === checkbox) {
+              return;
+            }
             checkbox.checked = !checkbox.checked;
             handleCheckboxChange({ target: checkbox });
           });
