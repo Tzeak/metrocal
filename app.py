@@ -316,7 +316,8 @@ def create_ical_events(selected_movies):
 @app.route('/')
 def index():
     # Determine the API base path based on environment
-    # In production, this would be '/metrocal/api', in development it's '/api'
+    # In production, app is mounted at /metrocal via WSGI Alias, so use /metrocal/api
+    # In development, use /api
     api_base_path = '/metrocal/api' if os.getenv('FLASK_ENV') == 'production' else '/api'
     return render_template('index.html', api_base_path=api_base_path)
 
@@ -405,7 +406,8 @@ def get_image(image_path):
 # Register the API blueprint with appropriate prefix
 def register_api_routes():
     if os.getenv('FLASK_ENV') == 'production':
-        app.register_blueprint(api_bp, url_prefix='/metrocal/api')
+        # In production, app is mounted at /metrocal via WSGI Alias, so just use /api
+        app.register_blueprint(api_bp, url_prefix='/api')
     else:
         app.register_blueprint(api_bp, url_prefix='/api')
 
