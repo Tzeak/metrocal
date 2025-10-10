@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request, send_file
+from flask import Flask, render_template, jsonify, request, send_file, Blueprint
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from icalendar import Calendar, Event
@@ -19,6 +19,9 @@ from concurrent.futures import ThreadPoolExecutor
 
 
 app = Flask(__name__)
+
+# Create API blueprint
+api_bp = Blueprint('api', __name__)
 
 # Set up base directory and cache paths
 BASE_DIR = Path(__file__).resolve().parent
@@ -312,9 +315,12 @@ def create_ical_events(selected_movies):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    # Determine the API base path based on environment
+    # In production, this would be '/metrocal/api', in development it's '/api'
+    api_base_path = '/metrocal/api' if os.getenv('FLASK_ENV') == 'production' else '/api'
+    return render_template('index.html', api_base_path=api_base_path)
 
-@app.route('/api/movies')
+@api_bp.route('/movies')
 def get_movies():
     try:
         print("\n=== Loading Movies ===")
@@ -343,7 +349,7 @@ def get_movies():
         print(f"Error processing calendar data: {str(e)}")
         return jsonify({'error': 'Failed to process calendar data'}), 500
 
-@app.route('/api/create-calendar', methods=['POST'])
+@api_bp.route('/create-calendar', methods=['POST'])
 def create_calendar():
     try:
         data = request.get_json()
@@ -365,7 +371,7 @@ def create_calendar():
         print(f"Error creating calendar: {str(e)}")
         return jsonify({'error': 'Failed to create calendar'}), 500
 
-@app.route('/api/image/<path:image_path>')
+@api_bp.route('/image/<path:image_path>')
 def get_image(image_path):
     """Serve images from cache or fetch from TMDB."""
     try:
@@ -395,6 +401,16 @@ def get_image(image_path):
     except Exception as e:
         print(f"Error serving image: {str(e)}")
         return jsonify({'error': 'Failed to serve image'}), 500
+
+# Register the API blueprint with appropriate prefix
+def register_api_routes():
+    if os.getenv('FLASK_ENV') == 'production':
+        app.register_blueprint(api_bp, url_prefix='/metrocal/api')
+    else:
+        app.register_blueprint(api_bp, url_prefix='/api')
+
+# Register routes
+register_api_routes()
 
 # Initialize cache directories when app starts
 ensure_cache_dirs()
