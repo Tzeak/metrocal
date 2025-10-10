@@ -164,7 +164,7 @@ async def fetch_movie_data_async(movies):
 
 def fetch_calendar_data():
     print("\n=== Fetching Calendar Data from Metrograph ===")
-    url = "https://metrograph.com/calendar/"
+    url = "https://metrograph.com/film/"
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
     }
@@ -186,86 +186,92 @@ def parse_movie_data(html_content):
     movies = []
     movie_titles = set()  # To track unique movies
     
-    # Find all calendar days
-    calendar_days = soup.find_all('div', class_='calendar-list-day')
-    print(f"\nFound {len(calendar_days)} calendar days")
+    # Find all movie containers in the new structure
+    movie_containers = soup.find_all('div', class_='homepage-in-theater-movie')
+    print(f"\nFound {len(movie_containers)} movie containers")
     
     # First pass: collect all unique movies
-    for day in calendar_days:
-        date_div = day.find('div', class_='date')
-        if not date_div:
+    for container in movie_containers:
+        title_element = container.find('h3', class_='movie_title')
+        if not title_element:
             continue
             
-        current_date = date_div.text.strip()
-        print(f"Processing date: {current_date}")
-        
-        movie_items = day.find_all('div', class_='item')
-        for item in movie_items:
-            showtime_span = item.find('span', class_='calendar-list-showtimes')
-            if not showtime_span:
-                continue
-                
-            title_link = showtime_span.find('a', class_='title')
-            if not title_link:
-                continue
-                
-            movie_title = title_link.text.strip()
-            if movie_title not in movie_titles:
-                movie_titles.add(movie_title)
-                movies.append({
-                    'id': len(movies),
-                    'title': movie_title,
-                    'showtimes': []
-                })
+        title_link = title_element.find('a')
+        if not title_link:
+            continue
+            
+        movie_title = title_link.text.strip()
+        if movie_title not in movie_titles:
+            movie_titles.add(movie_title)
+            movies.append({
+                'id': len(movies),
+                'title': movie_title,
+                'showtimes': []
+            })
     
     print(f"\nFound {len(movies)} unique movies")
     
     # Second pass: collect all showtimes
-    for day in calendar_days:
-        date_div = day.find('div', class_='date')
-        if not date_div:
+    for container in movie_containers:
+        title_element = container.find('h3', class_='movie_title')
+        if not title_element:
             continue
             
-        current_date = date_div.text.strip()
-        movie_items = day.find_all('div', class_='item')
+        title_link = title_element.find('a')
+        if not title_link:
+            continue
+            
+        movie_title = title_link.text.strip()
         
-        for item in movie_items:
-            showtime_span = item.find('span', class_='calendar-list-showtimes')
-            if not showtime_span:
+        # Find the showtimes container
+        showtimes_div = container.find('div', class_='showtimes')
+        if not showtimes_div:
+            continue
+            
+        # Find all film_day divs (these contain the actual showtimes)
+        film_days = showtimes_div.find_all('div', class_='film_day')
+        
+        for film_day in film_days:
+            # Skip hidden days
+            if film_day.get('style') and 'display: none' in film_day.get('style'):
                 continue
                 
-            title_link = showtime_span.find('a', class_='title')
-            time_link = showtime_span.find_all('a')[-1]
-            
-            if not title_link or not time_link:
+            # Find the date from the preceding h5 element
+            date_h5 = film_day.find_previous('h5', class_='sr-only')
+            if not date_h5:
                 continue
                 
-            movie_title = title_link.text.strip()
-            time_text = time_link.text.strip()
-            showtime_url = time_link.get('href', '')
-            if showtime_url and not showtime_url.startswith('http'):
-                showtime_url = f"https://metrograph.com{showtime_url}"
+            date_text = date_h5.get_text(strip=True)
             
-            is_sold_out = 'sold_out' in time_link.get('class', [])
+            # Find all showtime links in this day
+            showtime_links = film_day.find_all('a')
             
-            try:
-                date_time = parser.parse(f"{current_date} {time_text}")
+            for link in showtime_links:
+                time_text = link.text.strip()
+                showtime_url = link.get('href', '')
                 
-                # Find the movie in our list and add the showtime
-                for movie in movies:
-                    if movie['title'] == movie_title:
-                        movie['showtimes'].append({
-                            'datetime': date_time.isoformat(),
-                            'formatted_time': date_time.strftime('%I:%M %p'),
-                            'formatted_date': date_time.strftime('%B %d'),
-                            'sold_out': is_sold_out,
-                            'url': showtime_url
-                        })
-                        break
-                        
-            except Exception as e:
-                print(f"Error parsing datetime: {str(e)}")
-                continue
+                # Check if sold out (look for sold out indicators)
+                is_sold_out = 'sold out' in link.text.lower() or 'soldout' in link.text.lower()
+                
+                try:
+                    # Parse the date and time
+                    date_time = parser.parse(f"{date_text} {time_text}")
+                    
+                    # Find the movie in our list and add the showtime
+                    for movie in movies:
+                        if movie['title'] == movie_title:
+                            movie['showtimes'].append({
+                                'datetime': date_time.isoformat(),
+                                'formatted_time': date_time.strftime('%I:%M %p'),
+                                'formatted_date': date_time.strftime('%B %d'),
+                                'sold_out': is_sold_out,
+                                'url': showtime_url
+                            })
+                            break
+                            
+                except Exception as e:
+                    print(f"Error parsing datetime '{date_text} {time_text}': {str(e)}")
+                    continue
     
     # Fetch TMDB data asynchronously
     print("\nFetching TMDB data for movies...")
@@ -394,4 +400,4 @@ def get_image(image_path):
 ensure_cache_dirs()
 
 if __name__ == '__main__':
-    app.run(debug=True) 
+    app.run(debug=True, port=5001) 
